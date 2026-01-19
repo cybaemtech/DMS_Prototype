@@ -48,7 +48,7 @@ interface Notification {
 export default function ApproverDashboard({ 
   onLogout, 
   userId = "approver-1",
-  approverName = "Sarah Johnson" 
+  approverName = "" 
 }: ApproverDashboardProps) {
   const [approveDialogOpen, setApproveDialogOpen] = useState(false);
   const [declineDialogOpen, setDeclineDialogOpen] = useState(false);

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
@@ -28,9 +28,11 @@ interface Activity {
 
 function Router() {
   const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [userName, setUserName] = useState<string>("");
+  const [userFullName, setUserFullName] = useState<string>("");
   const [userId, setUserId] = useState<string>("");
   const [notifications, setNotifications] = useState<any[]>([]);
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -70,6 +72,7 @@ function Router() {
       
       setUserRole(role);
       setUserName(user.username);
+      setUserFullName(user.fullName);
       setUserId(user.id);
       setIsAuthenticated(true);
 
@@ -181,6 +184,9 @@ function Router() {
         message: `${data.docName} has been submitted for approval. Header and footer extracted automatically.`,
       });
 
+      // Invalidate queries to refresh the document list
+      queryClient.invalidateQueries({ queryKey: ["/api/documents"] });
+      
       setLocation("/creator");
     } catch (error: any) {
       console.error("Error submitting document:", error);
@@ -288,8 +294,8 @@ function Router() {
             />
           )}
         />
-        <Route path="/approver" component={() => <ApproverDashboard onLogout={handleLogout} userId={userId} />} />
-        <Route path="/issuer" component={() => <IssuerDashboard onLogout={handleLogout} userId={userId} />} />
+        <Route path="/approver" component={() => <ApproverDashboard onLogout={handleLogout} userId={userId} approverName={userFullName} />} />
+        <Route path="/issuer" component={() => <IssuerDashboard onLogout={handleLogout} userId={userId} issuerName={userFullName} />} />
         <Route path="/recipient" component={() => <RecipientDashboard onLogout={handleLogout} userId={userId} />} />
         <Route path="/admin" component={() => <AdminDashboard onLogout={handleLogout} userId={userId} />} />
         <Route component={NotFound} />

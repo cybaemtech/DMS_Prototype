@@ -17,6 +17,7 @@ import { apiRequest } from "@/lib/queryClient";
 interface IssuerDashboardProps {
   onLogout?: () => void;
   userId?: string;
+  issuerName?: string;
 }
 
 interface ApiDocument {
@@ -50,7 +51,7 @@ interface Notification {
   createdAt: string;
 }
 
-export default function IssuerDashboard({ onLogout, userId = "issuer-1" }: IssuerDashboardProps) {
+export default function IssuerDashboard({ onLogout, userId = "issuer-1", issuerName = "" }: IssuerDashboardProps) {
   const [issueDialogOpen, setIssueDialogOpen] = useState(false);
   const [declineDialogOpen, setDeclineDialogOpen] = useState(false);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
@@ -356,6 +357,7 @@ export default function IssuerDashboard({ onLogout, userId = "issuer-1" }: Issue
         onApprove={handleIssueConfirm}
         type="approve"
         title={`Issue Document: ${selectedDoc?.docName}`}
+        approverName={issuerName}
       />
 
       <ApprovalDialog
